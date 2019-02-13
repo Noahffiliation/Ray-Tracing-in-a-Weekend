@@ -1,11 +1,8 @@
 #ifndef MATERIALH
 #define MATERIALH
 
-struct hit_record;
-
 #include "ray.h"
 #include "hitable.h"
-#include "texture.h"
 
 float schlick(float cosine, float ref_idx) {
     float r0 = (1 - ref_idx) / (1 + ref_idx);
@@ -44,15 +41,15 @@ class material {
 
 class lambertian : public material {
     public:
-        lambertian(texture *a) : albedo(a) {}
-        virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const  {
-             vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-             scattered = ray(rec.p, target-rec.p, r_in.time());
-             attenuation = albedo->value(rec.u, rec.v, rec.p);
-             return true;
+        lambertian(const vec3& a) : albedo(a) {}
+        virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const {
+            vec3 target = rec.p + rec.normal + random_in_unit_sphere();
+            scattered = ray(rec.p, target - rec.p);
+            attenuation = albedo;
+            return true;
         }
 
-        texture *albedo;
+        vec3 albedo;
 };
 
 class metal : public material {
